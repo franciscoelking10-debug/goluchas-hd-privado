@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoLuchas VIP - Transmisión Privada HD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0c10;
+            --surface: #141822;
+            --surface-hover: #1c2230;
+            --primary: #e63946;
+            --primary-glow: rgba(230, 57, 70, 0.4);
+            --accent: #00d4ff;
+            --text-main: #f8f9fa;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: rgba(20, 24, 34, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-badge {
+            background: linear-gradient(135deg, #e63946, #b5179e);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .logo-title {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(230, 57, 70, 0.12);
+            border: 1px solid rgba(230, 57, 70, 0.3);
+            color: #ff4d6d;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #e63946;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.7; box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.7); }
+            70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 0 7px rgba(230, 57, 70, 0); }
+            100% { transform: scale(0.9); opacity: 0.7; }
+        }
+
+        main {
+            flex: 1;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Player Container */
+        .player-card {
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+            position: relative;
+        }
+
+        .video-viewport {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000;
+            overflow: hidden;
+        }
+
+        .video-viewport iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            transition: filter 0.3s ease;
+        }
+
+        /* Filtros de Realce de Definición */
+        .quality-normal iframe {
+            filter: none;
+        }
+
+        .quality-hd-boost iframe {
+            filter: contrast(1.08) saturate(1.15) brightness(1.02);
+        }
+
+        .quality-ultra-sharp iframe {
+            filter: contrast(1.14) saturate(1.22) brightness(1.04) drop-shadow(0 0 1px rgba(0,0,0,0.5));
+        }
+
+        .quality-vivid iframe {
+            filter: contrast(1.12) saturate(1.35) brightness(1.05);
+        }
+
+        /* Controles y Canales */
+        .control-panel {
+            background: var(--surface);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            padding: 18px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .channel-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .section-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 6px;
+        }
+
+        .channel-btn {
+            background: var(--surface-hover);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .channel-btn:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .channel-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        .tools-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hd-selector {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: var(--accent);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .hd-selector option {
+            background: #141822;
+            color: #fff;
+        }
+
+        .action-btn {
+            background: var(--surface-hover);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .info-card {
+            background: var(--surface);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            padding: 20px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .info-icon {
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        .info-content h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+
+        .info-content p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-box">
+            <span class="logo-badge">Privado</span>
+            <span class="logo-title">GoLuchas Player HD</span>
+        </div>
+        <div class="live-indicator">
+            <span class="live-dot"></span>
+            <span>Señal Activa Sin Publicidad</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="player-card" id="playerCard">
+            <div class="video-viewport quality-hd-boost" id="videoViewport">
+                <iframe 
+                    id="streamIframe"
+                    src="https://blib.shop/embed1.php?file=goluchas45" 
+                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                    allowfullscreen
+                    sandbox="allow-scripts allow-same-origin allow-presentation">
+                </iframe>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <div class="channel-section">
+                <span class="section-label">Canales:</span>
+                <button class="channel-btn active" onclick="changeChannel('https://blib.shop/embed1.php?file=goluchas45', this)">Canal 0 (UFC / WWE HD)</button>
+                <button class="channel-btn" onclick="changeChannel('https://new.lastzone.top/hembedplayer/canakl1gl/4/500/400', this)">Canal 1 (Servidor Alterno)</button>
+                <button class="channel-btn" onclick="changeChannel('https://tv.goluchitas.com/canal-69/', this)">Canal 69 (AEW)</button>
+            </div>
+
+            <div class="tools-section">
+                <span class="section-label">Definición:</span>
+                <select class="hd-selector" id="qualitySelect" onchange="applyQualityFilter(this.value)">
+                    <option value="quality-hd-boost">✨ 1080p HD Boost (Mejora de Contraste y Nitidez)</option>
+                    <option value="quality-ultra-sharp">🔥 Ultra Sharp (Máxima Definición / Realce de Bordes)</option>
+                    <option value="quality-vivid">🎨 Modo Cine / Colores Vívidos</option>
+                    <option value="quality-normal">⚪ Original Sin Filtros</option>
+                </select>
+
+                <button class="action-btn" onclick="toggleFullscreen()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                    Pantalla Completa
+                </button>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <span class="info-icon">⚡</span>
+            <div class="info-content">
+                <h3>Modo Privado Anti-Anuncios y Realce de Imagen Activo</h3>
+                <p>Este reproductor corre en un entorno <strong>sandboxed</strong> que bloquea ventanas emergentes, redirecciones y descargas no deseadas del servidor original. El filtro de <strong>Realce de Definición (HD Boost)</strong> procesa la imagen en tiempo real para optimizar la nitidez y eliminar la pérdida de contraste propia de la compresión del streaming.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        Reproductor Privado GoLuchas HD • Optimizado para PC, Móvil y Smart TV
+    </footer>
+
+    <script>
+        function changeChannel(url, btn) {
+            const iframe = document.getElementById('streamIframe');
+            iframe.src = url;
+
+            document.querySelectorAll('.channel-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+        }
+
+        function applyQualityFilter(className) {
+            const viewport = document.getElementById('videoViewport');
+            viewport.className = 'video-viewport ' + className;
+        }
+
+        function toggleFullscreen() {
+            const player = document.getElementById('playerCard');
+            if (!document.fullscreenElement) {
+                if (player.requestFullscreen) {
+                    player.requestFullscreen();
+                } else if (player.webkitRequestFullscreen) {
+                    player.webkitRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
